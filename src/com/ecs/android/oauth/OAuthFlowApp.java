@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Entry point in the application.
@@ -61,8 +62,9 @@ public class OAuthFlowApp extends Activity {
             }
         });
         
-        
-        performApiCall();
+        //TODO ENABLE
+        Toast.makeText(getBaseContext(), "Authenticated ", 0).show();
+       performApiCall();
     }
 
 	private void performApiCall() {

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Prepares a OAuthConsumer and OAuthProvider 
@@ -62,6 +63,7 @@ public class PrepareRequestTokenActivity extends Activity {
 		if (uri != null && uri.getScheme().equals(Constants.OAUTH_CALLBACK_SCHEME)) {
 			Log.i(TAG, "Callback received : " + uri);
 			Log.i(TAG, "Retrieving Access Token");
+			Toast.makeText(getBaseContext(), "Done", 0).show();
 			new RetrieveAccessTokenTask(this,consumer,provider,prefs).execute(uri);
 			finish();	
 		}
