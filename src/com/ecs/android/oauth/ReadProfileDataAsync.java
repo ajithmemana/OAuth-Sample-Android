@@ -8,6 +8,9 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
+
+import com.google.myjson.GsonBuilder;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
@@ -63,9 +66,12 @@ public class ReadProfileDataAsync extends AsyncTask<OAuthConsumer, Void, String>
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.i(TAG, "Response : " + responseBuilder.toString());
+		//TODO  HANDLE RESPONSE DATA HERE .
 		
-		
+		Log.v(TAG, "Response : " + responseBuilder.toString());
+		Log.d(TAG, "Name = " + Utility.getJsonField(responseBuilder.toString(), "name"));
+		Log.d(TAG,"Birthday = "+ Utility.getJsonField(responseBuilder.toString(), "birthday"));
+
 		
 		return responseBuilder.toString();
 	}
