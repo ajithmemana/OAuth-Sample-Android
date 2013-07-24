@@ -14,12 +14,32 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import com.ecs.android.oauth.Imageloader.ImageLoader;
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class ReadProfileDataAsync extends AsyncTask<OAuthConsumer, Void, String> {
 	String TAG = "OauthApp";
 	BufferedReader bufferedReader;
+	TextView profileId, profileName, profileGender, profileBirthday;
+	ImageView profilePic;
+	ProgressBar profilePicLoader;
+	Context context;
+	public ReadProfileDataAsync(TextView profileId, TextView profileName, TextView profileGender,
+			TextView profileBirthday, ImageView profilePic, ProgressBar profilePicLoader, Context context) {
+		this.profileId = profileId;
+		this.profileName = profileName;
+		this.profileGender = profileGender;
+		this.profileBirthday = profileBirthday;
+		this.profilePic = profilePic;
+		this.profilePicLoader =profilePicLoader;
+		this.context =context;
+	}
 	@Override
 	protected String doInBackground(OAuthConsumer... params) {
 
@@ -61,10 +81,8 @@ public class ReadProfileDataAsync extends AsyncTask<OAuthConsumer, Void, String>
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//TODO  HANDLE RESPONSE DATA HERE .
-		
-	
-		
+		// TODO HANDLE RESPONSE DATA HERE .
+
 		return responseBuilder.toString();
 	}
 
@@ -72,10 +90,16 @@ public class ReadProfileDataAsync extends AsyncTask<OAuthConsumer, Void, String>
 		Log.v(TAG, "Finished async " + responseJson);
 		Log.v(TAG, "Response : " + responseJson);
 		Log.d(TAG, "Name = " + Utility.getJsonField(responseJson, "name"));
-		Log.d(TAG,"Birthday = "+ Utility.getJsonField(responseJson, "birthday"));
+		Log.d(TAG, "Birthday = " + Utility.getJsonField(responseJson, "birthday"));
+		
+		profileId.setText("Profile Id: " + Utility.getJsonField(responseJson, "id"));
+		profileName.setText("User name: " + Utility.getJsonField(responseJson, "name"));
+		profileGender.setText("Gender: " +Utility.getJsonField(responseJson, "gender"));
+		profileBirthday.setText("Birthday: "+Utility.getJsonField(responseJson, "birthday"));
+		ImageLoader imageLoader = new ImageLoader(context);
+		imageLoader.DisplayImageWithProgress(Utility.getJsonField(responseJson, "picture"), profilePic, profilePicLoader, false);
+		
 
-    }
-	
-	
+	}
 
 }

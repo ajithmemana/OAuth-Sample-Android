@@ -16,8 +16,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Entry point in the application. Launches the OAuth flow by starting the
@@ -28,15 +29,22 @@ public class OAuthFlowApp extends Activity {
 
 	final String TAG = "OauthApp";
 	private SharedPreferences prefs;
+	TextView profileId, profileName, profileGender, profileBirthday, profileLocale;
+	ImageView profilePic;
+	ProgressBar profilePicLoader;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "onCreate - OauthFlowApp.java");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_oauth_flow_app);
+		initViews();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		Button launchOauth = (Button) findViewById(R.id.btn_launch_oauth);
-		Button clearCredentials = (Button) findViewById(R.id.btn_clear_credentials);
+		Button clearCredentials = (Button) findViewById(R.id.clear_oauth);
+		Button readProfile= (Button) findViewById(R.id.read_profile);
+
 
 		launchOauth.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -53,7 +61,14 @@ public class OAuthFlowApp extends Activity {
 			}
 		});
 		// Read profile data
-		performApiCall();
+		readProfile.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				performApiCall();
+	
+			}
+		});
 	}
 
 	private void clearCredentials() {
@@ -73,28 +88,35 @@ public class OAuthFlowApp extends Activity {
 	}
 
 	private void performApiCall() {
-		TextView textView = (TextView) findViewById(R.id.response_code);
 		Log.v(TAG, "Reading profile data using Aync task");
 		String jsonOutput = "";
 		try {
-			new ReadProfileDataAsync().execute(getConsumer(this.prefs));
+			new ReadProfileDataAsync(profileId ,profileName , profileGender , profileBirthday , profilePic,profilePicLoader , this).execute(getConsumer(this.prefs));
 			System.out.println("jsonOutput : " + jsonOutput);
 			JSONObject jsonResponse = new JSONObject(jsonOutput);
 			JSONObject m = (JSONObject) jsonResponse.get("feed");
 			JSONArray entries = (JSONArray) m.getJSONArray("entry");
-			String contacts = "";
 			for (int i = 0; i < entries.length(); i++) {
 				JSONObject entry = entries.getJSONObject(i);
 				JSONObject title = entry.getJSONObject("title");
 				if (title.getString("$t") != null && title.getString("$t").length() > 0) {
-					contacts += title.getString("$t") + "\n";
 				}
 			}
 			Log.i("JSON Output", jsonOutput);
-			textView.setText(contacts);
 		} catch (Exception e) {
 			Log.e(TAG, "Error executing request", e);
-			textView.setText("Error retrieving Profile data : " + jsonOutput);
+			profileName.setText("Error retrieving Profile data : " + jsonOutput);
 		}
+	}
+
+	public void initViews() {
+		profileId = (TextView) findViewById(R.id.profile_id);
+		profileName = (TextView) findViewById(R.id.profile_name);
+		profileGender = (TextView) findViewById(R.id.profile_gender);
+		profileBirthday = (TextView) findViewById(R.id.profile_birthday);
+
+		profilePicLoader = (ProgressBar) findViewById(R.id.progressLoader);
+		profilePic = (ImageView) findViewById(R.id.imageView1);
+
 	}
 }
