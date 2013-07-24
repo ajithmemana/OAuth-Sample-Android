@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class RetrieveAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 
-	final String TAG = getClass().getName();
+	final String TAG = "OauthApp";
 	
 	private Context	context;
 	private OAuthProvider provider;
@@ -40,6 +40,7 @@ public class RetrieveAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 		final String oauth_verifier = uri.getQueryParameter(OAuth.OAUTH_VERIFIER);
 
 		try {
+			Log.v(TAG, "Retreiving auth token");
 			provider.retrieveAccessToken(consumer, oauth_verifier);
 
 			final Editor edit = prefs.edit();
@@ -49,6 +50,9 @@ public class RetrieveAccessTokenTask extends AsyncTask<Uri, Void, Void> {
 			
 			String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
 			String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
+			Log.v(TAG, "Oauth token is" + token);
+			Log.v(TAG, "Oauth secret is "+ secret);
+			
 			
 			consumer.setTokenWithSecret(token, secret);
 			context.startActivity(new Intent(context,OAuthFlowApp.class));

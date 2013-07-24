@@ -28,7 +28,7 @@ import android.widget.Toast;
  */
 public class PrepareRequestTokenActivity extends Activity {
 
-	final String TAG = getClass().getName();
+	final String TAG = "OauthApp";
 	
     private OAuthConsumer consumer; 
     private OAuthProvider provider;
@@ -47,7 +47,7 @@ public class PrepareRequestTokenActivity extends Activity {
         		Log.e(TAG, "Error creating consumer / provider",e);
     		}
 
-        Log.i(TAG, "Starting task to retrieve request token.");
+        Log.v(TAG, "Starting task to retrieve request token.");
 		new OAuthRequestTokenTask(this,consumer,provider).execute();
 	}
 
