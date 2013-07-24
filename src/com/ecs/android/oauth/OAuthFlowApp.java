@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -32,7 +33,7 @@ public class OAuthFlowApp extends Activity {
 	TextView profileId, profileName, profileGender, profileBirthday, profileLocale;
 	ImageView profilePic;
 	ProgressBar profilePicLoader;
-
+	Button readProfile;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "onCreate - OauthFlowApp.java");
@@ -43,8 +44,7 @@ public class OAuthFlowApp extends Activity {
 
 		Button launchOauth = (Button) findViewById(R.id.btn_launch_oauth);
 		Button clearCredentials = (Button) findViewById(R.id.clear_oauth);
-		Button readProfile= (Button) findViewById(R.id.read_profile);
-
+		 readProfile = (Button) findViewById(R.id.read_profile);
 
 		launchOauth.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -60,13 +60,18 @@ public class OAuthFlowApp extends Activity {
 				performApiCall();
 			}
 		});
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if (prefs.getString(OAuth.OAUTH_TOKEN, "").length() != 0
+				&& prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "").length() != 0) {
+			readProfile.setBackgroundColor(Color.RED);
+		}
 		// Read profile data
 		readProfile.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				performApiCall();
-	
+
 			}
 		});
 	}
@@ -77,6 +82,8 @@ public class OAuthFlowApp extends Activity {
 		edit.remove(OAuth.OAUTH_TOKEN);
 		edit.remove(OAuth.OAUTH_TOKEN_SECRET);
 		edit.commit();
+		readProfile.setBackgroundColor(Color.GRAY);
+
 	}
 	// Read a consumer auth token info from Prefs - already saved
 	private OAuthConsumer getConsumer(SharedPreferences prefs) {
@@ -91,7 +98,8 @@ public class OAuthFlowApp extends Activity {
 		Log.v(TAG, "Reading profile data using Aync task");
 		String jsonOutput = "";
 		try {
-			new ReadProfileDataAsync(profileId ,profileName , profileGender , profileBirthday , profilePic,profilePicLoader , this).execute(getConsumer(this.prefs));
+			new ReadProfileDataAsync(profileId, profileName, profileGender, profileBirthday, profilePic,
+					profilePicLoader, this).execute(getConsumer(this.prefs));
 			System.out.println("jsonOutput : " + jsonOutput);
 			JSONObject jsonResponse = new JSONObject(jsonOutput);
 			JSONObject m = (JSONObject) jsonResponse.get("feed");
