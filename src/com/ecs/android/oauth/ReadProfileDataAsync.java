@@ -5,20 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-
-import com.google.myjson.GsonBuilder;
-
-import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import android.content.SharedPreferences;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -68,18 +63,17 @@ public class ReadProfileDataAsync extends AsyncTask<OAuthConsumer, Void, String>
 		}
 		//TODO  HANDLE RESPONSE DATA HERE .
 		
-		Log.v(TAG, "Response : " + responseBuilder.toString());
-		Log.d(TAG, "Name = " + Utility.getJsonField(responseBuilder.toString(), "name"));
-		Log.d(TAG,"Birthday = "+ Utility.getJsonField(responseBuilder.toString(), "birthday"));
-
+	
 		
 		return responseBuilder.toString();
 	}
 
-	protected void onPostExecute(String feed) {
-		Log.v(TAG, "Finished async");
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-		//HttpGet request = new HttpGet("https://www.googleapis.com/oauth2/v1/userinfo?access_token={"+);
+	protected void onPostExecute(String responseJson) {
+		Log.v(TAG, "Finished async " + responseJson);
+		Log.v(TAG, "Response : " + responseJson);
+		Log.d(TAG, "Name = " + Utility.getJsonField(responseJson, "name"));
+		Log.d(TAG,"Birthday = "+ Utility.getJsonField(responseJson, "birthday"));
+
     }
 	
 	

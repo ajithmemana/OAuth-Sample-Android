@@ -1,16 +1,9 @@
 package com.ecs.android.oauth;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,12 +11,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
-import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Contacts.People;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -37,13 +26,11 @@ import android.widget.Toast;
  */
 public class OAuthFlowApp extends Activity {
 
-	private static final int PICK_CONTACT = 0;
 	final String TAG = "OauthApp";
 	private SharedPreferences prefs;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.v(TAG, "Oncreate - OauthFlowApp.java");
+		Log.v(TAG, "onCreate - OauthFlowApp.java");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_oauth_flow_app);
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -57,24 +44,16 @@ public class OAuthFlowApp extends Activity {
 				startActivity(new Intent().setClass(v.getContext(), PrepareRequestTokenActivity.class));
 			}
 		});
-
 		clearCredentials.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Log.v(TAG, "Clearing credentials");
-
 				clearCredentials();
+				// Not necessary i guess
 				performApiCall();
 			}
 		});
-
-		// TODO ENABLE
-		Toast.makeText(getBaseContext(), "Authenticated ", 0).show();
-		boolean secondTime = false;
-
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		if (prefs.getString(OAuth.OAUTH_TOKEN, "").length() != 0)
-			performApiCall();
-		secondTime = true;
+		// Read profile data
+		performApiCall();
 	}
 
 	private void clearCredentials() {
@@ -84,7 +63,7 @@ public class OAuthFlowApp extends Activity {
 		edit.remove(OAuth.OAUTH_TOKEN_SECRET);
 		edit.commit();
 	}
-
+	// Read a consumer auth token info from Prefs - already saved
 	private OAuthConsumer getConsumer(SharedPreferences prefs) {
 		String token = prefs.getString(OAuth.OAUTH_TOKEN, "");
 		String secret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
@@ -95,7 +74,7 @@ public class OAuthFlowApp extends Activity {
 
 	private void performApiCall() {
 		TextView textView = (TextView) findViewById(R.id.response_code);
-
+		Log.v(TAG, "Reading profile data using Aync task");
 		String jsonOutput = "";
 		try {
 			new ReadProfileDataAsync().execute(getConsumer(this.prefs));
@@ -115,9 +94,7 @@ public class OAuthFlowApp extends Activity {
 			textView.setText(contacts);
 		} catch (Exception e) {
 			Log.e(TAG, "Error executing request", e);
-			textView.setText("Error retrieving contacts : " + jsonOutput);
+			textView.setText("Error retrieving Profile data : " + jsonOutput);
 		}
 	}
-	// private String doGet(String url,OAuthConsumer consumer) throws Exception
-	// {}
 }

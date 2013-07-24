@@ -19,7 +19,6 @@ public class Utility {
 		try {
 			fieldData = jsonObject.getString(fieldName);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			fieldData = null;
 			e.printStackTrace();
 		}
